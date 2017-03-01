@@ -7,7 +7,7 @@ var express = require("express"),
 //Route route
 router.get('/', (req,res) => {
   res.render('landing');
-}
+});
 
 //Register form route
 router.get("/register", function(req, res) {
