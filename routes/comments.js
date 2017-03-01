@@ -1,8 +1,9 @@
 var express = require("express"),
-    router = express.Router(),
+    router = express.Router({mergeParams: true}), // mergeParams - allows the access of the id when using routes
     Campground = require("../models/campground"),
     Comment  = require("../models/comment");
 
+//Comments new
 router.get("/new", isLoggedIn, function(req,res){
     //find campground by id
     Campground.findById(req.params.id, function(err,campground){
@@ -15,6 +16,8 @@ router.get("/new", isLoggedIn, function(req,res){
 
 });
 
+
+//Comments create
 router.post("/", function(req,res){
     //lookup campground using id
     Campground.findById(req.params.id, function(err, campground) {
@@ -36,6 +39,7 @@ router.post("/", function(req,res){
 
 });
 
+//Middleware
 function isLoggedIn(req, res, next){
     if(req.isAuthenticated()){
         return next();

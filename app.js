@@ -10,8 +10,8 @@ var express = require("express"),
               seedDB = require("./seeds"),
               port = 3000 || process.env.PORT;
 
-
-var commentsRoutes = require("./routes/comments"),
+//Requiring routes
+var commentRoutes = require("./routes/comments"),
     campgroundRoutes = require("./routes/campground"),
     indexRoutes = require("./routes/index");
 
@@ -40,7 +40,7 @@ app.use(function(req,res,next){
 
 app.use('/', indexRoutes);
 app.use('/campgrounds', campgroundRoutes);
-app.use('/camgrounds/:id/comments', commentsRoutes);
+app.use('/camgrounds/:id/comments', commentRoutes);
 
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());

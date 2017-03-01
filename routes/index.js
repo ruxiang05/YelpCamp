@@ -3,11 +3,18 @@ var express = require("express"),
     passport = require("passport"),
     User = require("../models/user");
 
-//show register form
+
+//Route route
+router.get('/', (req,res) => {
+  res.render('landing');
+}
+
+//Register form route
 router.get("/register", function(req, res) {
    res.render('register');
 });
-//handle signup
+
+//handling register route
 router.post("/register", function(req,res){
     var newUser = new User({username:req.body.username});
    User.register(newUser, req.body.password, function(err,user){
@@ -22,7 +29,7 @@ router.post("/register", function(req,res){
    });
 });
 
-//show login form
+//Login route
 router.get('/login', function(req, res) {
     res.render('login');
 });
@@ -34,12 +41,14 @@ router.post('/login',passport.authenticate('local',
         failureRedirect: 'login'
         }), function(req, res) {
 });
-//logout
+
+//logout route
 router.get('/logout', function(req, res) {
    req.logout();
    res.redirect('/campgrounds');
 });
 
+//middleware
 function isLoggedIn(req, res, next){
     if(req.isAuthenticated()){
         return next();
