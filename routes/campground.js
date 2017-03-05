@@ -12,7 +12,7 @@ router.get("/", function(req,res){
         }else{
             res.render("campgrounds/index", {campgrounds: allCampgrounds, currentUser: req.user});
         }
-    })
+    });
 });
 
 //NEW - show form to create new campground
@@ -39,7 +39,7 @@ router.post("/",isLoggedIn, function(req,res){
     var description = req.body.description;
     var author = {
       id: req.user._id,
-      username = req.user.username
+      username : req.user.username
     };
     var newCampground = {name:name, image:image, description:description, author: author};
     //Create a new campgroudn and save to DB
@@ -53,6 +53,36 @@ router.post("/",isLoggedIn, function(req,res){
 
 });
 
+//EDIT campground
+router.get('/:id', checkCamgroundOwnership, (req,res) => {
+    Campground.findById(req.params.id, (err,foundCampground) => {
+      res.render('campgrounds/edit', {campground:foundCampground});
+    });
+});
+//UPDATE campground
+
+router.put('/:id', checkCamgroundOwnership, (req,res) => {
+  //find and update the correct campground
+  Campground.findByIdAndUpdate(req.body.id, req.body.campground, function(err,updatedCamground){
+    if(err){
+      res.redirect('/campgrounds');
+    } else {
+      res.redirect('campgrounds/' + req.params.id);
+    }
+  });
+
+});
+
+//DESTROY campground
+router.delete('/:id', checkCamgroundOwnership, (req,res) => {
+    Campground.findByIdAndRemove(req.params.id, function(err){
+      if(err){
+        res.redirect('/campgrounds');
+      }else{
+        res.redirect('/campgrounds');
+      }
+    })
+});
 //Middleware
 function isLoggedIn(req, res, next){
     if(req.isAuthenticated()){
@@ -60,6 +90,28 @@ function isLoggedIn(req, res, next){
     }
 
     res.redirect('/login');
+}
+
+function checkCamgroundOwnership(req,res,next){
+  router.get('/:id/edit', (req,res) => {
+    //is user logged in?
+    if(req.isAuthenticated()){
+      Campground.findById(req.params.id, function(err, foundCampground){
+          if(err){
+            res.redirect('back');
+          } else {
+            //does it own the campground?
+            if(foundCampground.author.id.equals(req.user._id)){
+              next();
+            } else {
+              res.redirect('back');
+            }
+
+          }
+      });
+    } else {
+      res.redirect('back');
+    }
 }
 
 module.exports = router;
